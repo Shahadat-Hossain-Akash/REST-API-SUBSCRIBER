@@ -1,85 +1,20 @@
 const express = require('express')
-const {findById} = require('../model/subscriber')
 const router = express.Router()
 const Subscriber = require('../model/subscriber')
+const { getAllSubscriber, getOneSubscriber,createNewSubscriber, updateSubscriber,deleteSubscriber } = require('../controller/subscriber') 
 
 //Get all
-router.get('/', async (req, res) => {
-    try {
-        const subs = await Subscriber.find()
-        res.json(subs)
-    } catch (err) {
-        res
-            .status(500)
-            .json({message: err.message})
-    }
-})
+router.get('/', getAllSubscriber)
 //Get one
-router.get('/:id', getSubscriber, (req, res) => {
-    res.json(res.subscriber)
-
-})
+router.get('/:id', getSubscriber, getOneSubscriber )
 //Create
-router.post('/', async (req, res) => {
-
-    const subscriber = new Subscriber(
-        {name: req.body.name, subscribedToChannel: req.body.subscribedToChannel}
-    )
-    try {
-        const newSubscriber = await subscriber.save()
-        res
-            .status(201)
-            .json(newSubscriber)
-    } catch (err) {
-        res
-            .status(400)
-            .json({message: err.message})
-    }
-
-})
+router.post('/', createNewSubscriber)
 //Update
-router.patch('/:id', getSubscriber, async (req, res) => {
-
-    if (req.body.name != null) {
-        res.subscriber.name = req.body.name
-    }
-
-    if (req.body.subscribedToChannel != null) {
-
-        res.subscriber.subscribedToChannel = req.body.subscribedToChannel
-    }
-
-    try {
-        const updatedUser = await res
-            .subscriber
-            .save()
-        res
-            .status(201)
-            .json(updatedUser)
-    } catch (err) {
-        res
-            .status(400)
-            .json({message: err.message})
-    }
-
-})
+router.patch('/:id', getSubscriber, updateSubscriber)
 //Delete
-router.delete('/:id', getSubscriber, async (req, res) => {
-    try {
-        await res
-            .subscriber
-            .deleteOne()
-        res.json({message: `User ${res.subscriber.name} & ID ${res.subscriber.id} is deleted successfully`})
-    } catch (err) {
-        res
-            .status(500)
-            .json({message: err.message})
-    }
-
-})
+router.delete('/:id', getSubscriber, deleteSubscriber)
 
 //Middleware
-
 async function getSubscriber(req, res, next) {
     let subscriber
     try {
@@ -98,5 +33,6 @@ async function getSubscriber(req, res, next) {
     res.subscriber = subscriber
     next()
 }
+
 
 module.exports = router
